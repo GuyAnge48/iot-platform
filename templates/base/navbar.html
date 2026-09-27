@@ -1,0 +1,91 @@
+﻿<!-- Barre de navigation supérieure — titre de page + actions globales -->
+<header class="bg-gray-900 border-b border-gray-800 shrink-0">
+    <div class="flex items-center justify-between px-4 md:px-6 h-14">
+
+        <!-- Bouton menu mobile + logo mobile -->
+        <div class="flex items-center gap-3">
+            <button class="md:hidden p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800"
+                    onclick="toggleMobileSidebar()">
+                <i data-lucide="menu" class="w-5 h-5"></i>
+            </button>
+            <span class="md:hidden font-semibold text-white text-sm">IoT Platform</span>
+        </div>
+
+        <!-- Titre de la page courante (desktop uniquement) -->
+        <div class="hidden md:block">
+            <h1 class="text-sm font-medium text-gray-300">
+                {% block page_title %}{% endblock %}
+            </h1>
+        </div>
+
+        <!-- Actions à droite : statut WebSocket, notifications -->
+        <div class="flex items-center gap-2">
+            <!-- Indicateur de connexion WebSocket -->
+            <div class="flex items-center gap-2 text-xs text-gray-500 mr-2">
+                <span id="ws-status-dot" class="status-dot offline"></span>
+                <span id="ws-status-text" class="hidden sm:inline">Déconnecté</span>
+            </div>
+
+            <!-- Cloche notifications -->
+            <button class="relative p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800">
+                <i data-lucide="bell" class="w-4 h-4"></i>
+                <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay mobile (fond sombre derrière le drawer) -->
+<div id="mobile-overlay"
+     class="fixed inset-0 z-40 bg-black/60 hidden md:hidden"
+     onclick="toggleMobileSidebar()"></div>
+
+<!-- Drawer sidebar mobile -->
+<div id="mobile-sidebar"
+     class="fixed inset-y-0 left-0 z-50 w-60 bg-gray-900 border-r border-gray-800 transform -translate-x-full transition-transform duration-200 md:hidden flex flex-col">
+
+    <div class="flex items-center justify-between px-5 py-5 border-b border-gray-800">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
+                <i data-lucide="cpu" class="w-4 h-4 text-white"></i>
+            </div>
+            <span class="font-semibold text-white text-sm">IoT Platform</span>
+        </div>
+        <button onclick="toggleMobileSidebar()" class="text-gray-400 hover:text-white">
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+    </div>
+
+    <nav class="flex-1 px-3 py-4 space-y-1">
+        <a href="/dashboard" class="sidebar-item {% if active_page == 'dashboard' %}active{% endif %} flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800">
+            <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+        </a>
+        <a href="/devices" class="sidebar-item {% if active_page == 'devices' %}active{% endif %} flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800">
+            <i data-lucide="cpu" class="w-4 h-4"></i> Appareils
+        </a>
+        <a href="/alerts" class="sidebar-item {% if active_page == 'alerts' %}active{% endif %} flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800">
+            <i data-lucide="bell" class="w-4 h-4"></i> Alertes
+        </a>
+    </nav>
+
+    <div class="px-4 py-4 border-t border-gray-800">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-indigo-700 flex items-center justify-center text-xs font-bold text-white">GA</div>
+            <div>
+                <p class="text-sm text-white font-medium">Guy Ange</p>
+                <p class="text-xs text-gray-500">Administrateur</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Ouvre/ferme le drawer sidebar sur mobile
+    function toggleMobileSidebar() {
+        const sidebar = document.getElementById('mobile-sidebar');
+        const overlay = document.getElementById('mobile-overlay');
+        const isOpen  = !sidebar.classList.contains('-translate-x-full');
+        sidebar.classList.toggle('-translate-x-full', isOpen);
+        overlay.classList.toggle('hidden', isOpen);
+    }
+</script>

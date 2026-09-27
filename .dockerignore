@@ -1,0 +1,26 @@
+﻿# .dockerignore — fichiers exclus de l'image Docker
+# Même logique que .gitignore : on n'envoie pas ce qui est inutile ou lourd
+
+# Environnement virtuel Python — les dépendances sont réinstallées dans le conteneur
+.venv/
+
+# Fichiers Python compilés — inutiles dans l'image
+__pycache__/
+*.pyc
+*.pyo
+
+# Fichiers Git
+.git/
+.gitignore
+
+# Fichiers de configuration locale
+.env
+.env.local
+
+# Docker lui-même
+Dockerfile
+.dockerignore
+
+# Fichiers Windows
+Thumbs.db
+desktop.ini

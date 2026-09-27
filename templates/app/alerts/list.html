@@ -1,0 +1,99 @@
+@'
+{% extends "base/base.html" %}
+
+{% block title %}Alertes — IoT Platform{% endblock %}
+{% block page_title %}Alertes{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-5">
+
+    <!-- En-tête -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-lg font-semibold text-white">Alertes</h2>
+            <p class="text-sm text-gray-500 mt-0.5">
+                {{ alerts | selectattr('acknowledged', 'equalto', false) | list | length }} alerte(s) non acquittée(s)
+            </p>
+        </div>
+    </div>
+
+    <!-- Liste des alertes -->
+    {% if alerts %}
+    <div class="space-y-3">
+        {% for alert in alerts %}
+        <div class="bg-gray-900 border rounded-xl p-5 transition-all
+            {% if alert.severity == 'error' %}border-red-900
+            {% elif alert.severity == 'warning' %}border-yellow-900
+            {% else %}border-gray-800{% endif %}
+            {% if alert.acknowledged %}opacity-50{% endif %}">
+
+            <div class="flex items-start gap-4">
+                <!-- Icône sévérité -->
+                <div class="shrink-0 mt-0.5">
+                    {% if alert.severity == 'error' %}
+                    <div class="w-9 h-9 rounded-lg bg-red-900/40 flex items-center justify-center">
+                        <i data-lucide="alert-circle" class="w-5 h-5 text-red-400"></i>
+                    </div>
+                    {% elif alert.severity == 'warning' %}
+                    <div class="w-9 h-9 rounded-lg bg-yellow-900/40 flex items-center justify-center">
+                        <i data-lucide="alert-triangle" class="w-5 h-5 text-yellow-400"></i>
+                    </div>
+                    {% else %}
+                    <div class="w-9 h-9 rounded-lg bg-blue-900/40 flex items-center justify-center">
+                        <i data-lucide="info" class="w-5 h-5 text-blue-400"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Contenu alerte -->
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <p class="text-sm font-medium text-white">{{ alert.device_name }}</p>
+                        <!-- Badge sévérité -->
+                        <span class="text-xs px-2 py-0.5 rounded-full
+                            {% if alert.severity == 'error' %}bg-red-900/50 text-red-400
+                            {% elif alert.severity == 'warning' %}bg-yellow-900/50 text-yellow-400
+                            {% else %}bg-blue-900/50 text-blue-400{% endif %}">
+                            {{ alert.severity }}
+                        </span>
+                        {% if alert.acknowledged %}
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-gray-800 text-gray-500">
+                            acquittée
+                        </span>
+                        {% endif %}
+                    </div>
+                    <p class="text-sm text-gray-400 mt-1">{{ alert.message }}</p>
+                    <p class="text-xs text-gray-600 mt-1.5">{{ alert.timestamp }}</p>
+                </div>
+
+                <!-- Bouton acquitter — HTMX POST, remplace le bouton par "Acquittée" -->
+                <div id="ack-{{ alert.id }}" class="shrink-0">
+                    {% if not alert.acknowledged %}
+                    <button hx-post="/alerts/{{ alert.id }}/acknowledge"
+                            hx-target="#ack-{{ alert.id }}"
+                            hx-swap="outerHTML"
+                            class="text-xs px-3 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 hover:text-white hover:border-indigo-600 transition-colors">
+                        Acquitter
+                    </button>
+                    {% else %}
+                    <span class="text-xs text-gray-500 italic">Acquittée</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <!-- État vide -->
+    <div class="bg-gray-900 border border-gray-800 rounded-xl p-12 text-center">
+        <i data-lucide="check-circle" class="w-12 h-12 text-green-500 mx-auto mb-4"></i>
+        <p class="text-base font-medium text-gray-400">Aucune alerte</p>
+        <p class="text-sm text-gray-600 mt-1">Tous les appareils fonctionnent normalement.</p>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
+'@ | Set-Content -Encoding UTF8 templates/app/alerts/list.html
+Write-Host "alerts/list.html OK"

@@ -1,0 +1,58 @@
+{% extends "base/base.html" %}
+
+{% block title %}Appareils — IoT Platform{% endblock %}
+{% block page_title %}Appareils{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-5">
+
+    <!-- En-tête : titre + bouton ajout -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-lg font-semibold text-white">Mes appareils</h2>
+            <p class="text-sm text-gray-500 mt-0.5">{{ devices|length }} appareil(s) enregistré(s)</p>
+        </div>
+        <!-- Bouton placeholder — wizard à implémenter -->
+        <button class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            Ajouter un appareil
+        </button>
+    </div>
+
+    <!-- Barre de recherche — HTMX live search -->
+    <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+        <div class="flex items-center gap-3">
+            <div class="relative flex-1">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i>
+                <!-- hx-get déclenche une recherche côté serveur à chaque frappe -->
+                <!-- hx-target remplace uniquement la liste, pas toute la page -->
+                <input type="text"
+                       name="search"
+                       placeholder="Rechercher un appareil..."
+                       value="{{ search }}"
+                       class="w-full bg-gray-800 border border-gray-700 rounded-lg pl-9 pr-4 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+                       hx-get="/devices"
+                       hx-trigger="keyup changed delay:300ms"
+                       hx-target="#devices-list"
+                       hx-swap="innerHTML"
+                       hx-include="[name='search']">
+            </div>
+            <!-- Filtre statut — placeholder visuel pour la démo -->
+            <select class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="">Tous les statuts</option>
+                <option value="online">En ligne</option>
+                <option value="offline">Hors ligne</option>
+                <option value="warning">Avertissement</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Liste des appareils — cible des mises à jour HTMX -->
+    <div id="devices-list">
+        {% include "app/devices/_list_fragment.html" %}
+    </div>
+
+</div>
+{% endblock %}
+'@ | Set-Content -Encoding UTF8 templates/app/devices/list.html
+Write-Host "devices/list.html OK"

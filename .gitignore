@@ -1,0 +1,21 @@
+﻿# Environnement virtuel Python — ne jamais envoyer sur GitHub
+.venv/
+
+# Fichiers Python compilés — générés automatiquement, inutiles sur GitHub
+__pycache__/
+*.pyc
+*.pyo
+
+# Variables d'environnement — contiennent des secrets
+.env
+.env.local
+
+# Docker (optionnel de les exclure, mais propre)
+# Dockerfile et .dockerignore sont utiles à garder sur GitHub
+
+# Fichiers Windows
+Thumbs.db
+desktop.ini
+
+# VS Code
+.vscode/
