@@ -1,0 +1,329 @@
+﻿{% extends "base/base.html" %}
+
+{% block title %}Télémétrie — IoT Platform{% endblock %}
+{% block page_title %}Télémétrie{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- ======================================================
+         EN-TÊTE
+         ====================================================== -->
+    <div>
+        <h2 class="text-lg font-semibold text-white">Télémétrie globale</h2>
+        <p class="text-sm text-gray-500 mt-0.5">
+            Supervision en temps réel de tous les capteurs
+        </p>
+    </div>
+
+    <!-- ======================================================
+         STATS GLOBALES
+         ====================================================== -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-xs text-gray-500 uppercase tracking-wide">Total</span>
+                <div class="w-8 h-8 rounded-lg bg-indigo-600/20 flex items-center justify-center">
+                    <i data-lucide="cpu" class="w-4 h-4 text-indigo-400"></i>
+                </div>
+            </div>
+            <p class="text-2xl font-bold text-white">{{ devices|length }}</p>
+            <p class="text-xs text-gray-500 mt-1">Appareils enregistrés</p>
+        </div>
+
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-xs text-gray-500 uppercase tracking-wide">En ligne</span>
+                <div class="w-8 h-8 rounded-lg bg-green-600/20 flex items-center justify-center">
+                    <i data-lucide="wifi" class="w-4 h-4 text-green-400"></i>
+                </div>
+            </div>
+            <p class="text-2xl font-bold text-white">{{ online_devices|length }}</p>
+            <p class="text-xs text-green-500 mt-1">Actifs maintenant</p>
+        </div>
+
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-xs text-gray-500 uppercase tracking-wide">Capteurs</span>
+                <div class="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center">
+                    <i data-lucide="activity" class="w-4 h-4 text-blue-400"></i>
+                </div>
+            </div>
+            <p class="text-2xl font-bold text-white">
+                {{ devices | map(attribute='components') | sum(start=[]) | selectattr('type', 'equalto', 'sensor') | list | length }}
+            </p>
+            <p class="text-xs text-gray-500 mt-1">Capteurs actifs</p>
+        </div>
+
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-xs text-gray-500 uppercase tracking-wide">Sélectionné</span>
+                <div class="w-8 h-8 rounded-lg bg-purple-600/20 flex items-center justify-center">
+                    <i data-lucide="focus" class="w-4 h-4 text-purple-400"></i>
+                </div>
+            </div>
+            <p class="text-sm font-bold text-white truncate">
+                {{ selected_device.name if selected_device else '-' }}
+            </p>
+            <p class="text-xs text-gray-500 mt-1">
+                {{ selected_device.components|length if selected_device else 0 }} composant(s)
+            </p>
+        </div>
+    </div>
+
+    <!-- ======================================================
+         GRILLE PRINCIPALE
+         Gauche : sélecteur appareils
+         Droite : graphiques temps réel
+         ====================================================== -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+        <!-- Liste des appareils — sélecteur -->
+        <div class="lg:col-span-1">
+            <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+                <div class="px-4 py-3 border-b border-gray-800">
+                    <h3 class="text-sm font-medium text-white">Appareils</h3>
+                </div>
+                <div class="divide-y divide-gray-800">
+                    {% for device in devices %}
+                    <!-- Clic = recharge la page avec device_id en paramètre -->
+                    <a href="/telemetry?device_id={{ device.id }}"
+                       class="flex items-center gap-3 px-4 py-3 transition-colors
+                           {% if selected_device and selected_device.id == device.id %}
+                           bg-indigo-900/30 border-l-2 border-indigo-500
+                           {% else %}
+                           hover:bg-gray-800/50
+                           {% endif %}">
+                        <span class="status-dot {{ device.status }} shrink-0"></span>
+                        <div class="min-w-0">
+                            <p class="text-xs font-medium text-white truncate">{{ device.name }}</p>
+                            <p class="text-xs text-gray-500">
+                                {{ device.components | selectattr('type', 'equalto', 'sensor') | list | length }}
+                                capteur(s)
+                            </p>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphiques de l'appareil sélectionné -->
+        <div class="lg:col-span-3 space-y-6">
+
+            {% if selected_device %}
+
+            <!-- En-tête appareil sélectionné -->
+            <div class="flex items-center gap-3">
+                <span class="status-dot {{ selected_device.status }}"></span>
+                <h3 class="text-base font-semibold text-white">{{ selected_device.name }}</h3>
+                <span class="text-xs px-2 py-0.5 rounded-full
+                    {% if selected_device.status == 'online' %}bg-green-900/50 text-green-400
+                    {% elif selected_device.status == 'warning' %}bg-yellow-900/50 text-yellow-400
+                    {% else %}bg-gray-800 text-gray-500{% endif %}">
+                    {{ selected_device.status }}
+                </span>
+            </div>
+
+            <!-- Valeurs actuelles des composants — mises à jour par WebSocket -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {% for component in selected_device.components %}
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-3">
+                    <div class="flex items-center gap-2 mb-2">
+                        {% if component.type == 'sensor' %}
+                        <i data-lucide="activity" class="w-3.5 h-3.5 text-indigo-400"></i>
+                        {% else %}
+                        <i data-lucide="zap" class="w-3.5 h-3.5 text-yellow-400"></i>
+                        {% endif %}
+                        <span class="text-xs text-gray-400">{{ component.name }}</span>
+                    </div>
+                    <!-- id = val-{device_id}-{component_id} — ciblé par WebSocket -->
+                    <p class="text-xl font-bold text-white"
+                       id="val-{{ selected_device.id }}-{{ component.id }}">
+                        {{ component.value }}
+                        <span class="text-xs font-normal text-gray-500">{{ component.unit }}</span>
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Un graphique par composant sensor -->
+            {% for component in selected_device.components %}
+            {% if component.type == 'sensor' %}
+            <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+                <div class="flex items-center justify-between px-5 py-4 border-b border-gray-800">
+                    <div>
+                        <h4 class="text-sm font-medium text-white">{{ component.name }}</h4>
+                        <p class="text-xs text-gray-500 mt-0.5">
+                            Mise à jour en temps réel · 20 dernières mesures
+                        </p>
+                    </div>
+                    <span class="text-xs text-gray-600 bg-gray-800 px-2 py-1 rounded">
+                        {{ component.unit }}
+                    </span>
+                </div>
+                <!-- Canvas Chart.js — id = chart-{component_id} -->
+                <div class="p-5">
+                    <canvas id="chart-{{ component.id }}" height="100"></canvas>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+
+            {% else %}
+            <!-- État vide — aucun appareil sélectionné -->
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-12 text-center">
+                <i data-lucide="activity" class="w-12 h-12 text-gray-700 mx-auto mb-4"></i>
+                <p class="text-base font-medium text-gray-400">Aucun appareil sélectionné</p>
+                <p class="text-sm text-gray-600 mt-1">
+                    Sélectionne un appareil dans la liste pour voir ses graphiques.
+                </p>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// ================================================================
+// TÉLÉMÉTRIE — GRAPHIQUES + WEBSOCKET
+// ================================================================
+// 1. Initialise un graphique Chart.js par composant sensor
+// 2. Connecte le WebSocket pour les mises à jour temps réel
+// 3. Met à jour les valeurs ET les graphiques à chaque message
+// ================================================================
+
+// Données historiques injectées par Jinja2
+// Format : { "component_id": [{timestamp, value}, ...], ... }
+const telemetryByComponent = {{ telemetry_by_component | safe }};
+
+// ID de l'appareil sélectionné
+const deviceId = "{{ selected_device.id if selected_device else '' }}";
+
+// Stocke tous les graphiques — clé = component_id
+const charts = {};
+
+// Nombre max de points par graphique
+const MAX_POINTS = 20;
+
+// ----------------------------------------------------------------
+// CRÉATION DES GRAPHIQUES
+// Un graphique par composant sensor trouvé dans telemetryByComponent
+// ----------------------------------------------------------------
+Object.keys(telemetryByComponent).forEach(componentId => {
+
+    // Trouve le canvas par son id : chart-{component_id}
+    const canvas = document.getElementById(`chart-${componentId}`);
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    const data = telemetryByComponent[componentId];
+
+    // Crée et stocke le graphique
+    charts[componentId] = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data.map(d => d.timestamp),   // Axe X : timestamps
+            datasets: [{
+                data: data.map(d => d.value),      // Axe Y : valeurs
+                borderColor: '#6366f1',
+                backgroundColor: 'rgba(99,102,241,0.08)',
+                borderWidth: 2,
+                pointRadius: 2,
+                pointHoverRadius: 5,
+                pointBackgroundColor: '#6366f1',
+                tension: 0.4,
+                fill: true,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1f2937',
+                    borderColor: '#374151',
+                    borderWidth: 1,
+                    titleColor: '#9ca3af',
+                    bodyColor: '#fff',
+                }
+            },
+            scales: {
+                x: { grid: { color: 'rgba(55,65,81,0.5)' }, ticks: { color: '#6b7280', font: { size: 10 } } },
+                y: { grid: { color: 'rgba(55,65,81,0.5)' }, ticks: { color: '#6b7280', font: { size: 10 } } }
+            }
+        }
+    });
+});
+
+// ----------------------------------------------------------------
+// WEBSOCKET — MISES À JOUR TEMPS RÉEL
+// Seulement si un appareil est sélectionné
+// ----------------------------------------------------------------
+if (deviceId) {
+    connectWS(
+        '/ws/telemetry',
+
+        // Handler message — appelé à chaque donnée reçue
+        (data) => {
+
+            // Ignorer les messages d'autres appareils
+            if (data.device_id !== deviceId) return;
+
+            // 1. Mise à jour de la valeur dans la grille
+            const el = document.getElementById(`val-${data.device_id}-${data.component_id}`);
+            if (el) {
+                el.innerHTML = `${data.value} <span class="text-xs font-normal text-gray-500">${data.unit}</span>`;
+                // Animation flash violet
+                el.classList.remove('value-updated');
+                void el.offsetWidth;
+                el.classList.add('value-updated');
+            }
+
+            // 2. Mise à jour du graphique
+            const chart = charts[data.component_id];
+            if (!chart) return;
+
+            // Timestamp HH:MM:SS pour l'axe X
+            const now = new Date();
+            const timestamp =
+                now.getHours().toString().padStart(2, '0') + ':' +
+                now.getMinutes().toString().padStart(2, '0') + ':' +
+                now.getSeconds().toString().padStart(2, '0');
+
+            // Ajoute le nouveau point
+            chart.data.labels.push(timestamp);
+            chart.data.datasets[0].data.push(data.value);
+
+            // Fenêtre glissante : supprime le plus ancien si > MAX_POINTS
+            if (chart.data.labels.length > MAX_POINTS) {
+                chart.data.labels.shift();
+                chart.data.datasets[0].data.shift();
+            }
+
+            // Redessine sans animation
+            chart.update('none');
+        },
+
+        // Handler statut — indicateur navbar
+        (status) => {
+            const dot  = document.getElementById('ws-status-dot');
+            const text = document.getElementById('ws-status-text');
+            if (!dot || !text) return;
+            if (status === 'connected') {
+                dot.className    = 'status-dot online';
+                text.textContent = 'Connecté';
+            } else {
+                dot.className    = 'status-dot offline';
+                text.textContent = 'Déconnecté';
+            }
+        }
+    );
+}
+</script>
+{% endblock %}

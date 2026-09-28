@@ -1,14 +1,15 @@
-# app/main.py
+﻿# app/main.py
 # Point d'entrée principal de l'application FastAPI
 # Monte les fichiers statiques, les templates Jinja2 et tous les routeurs
 
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi.responses import RedirectResponse
 from fastapi.exceptions import HTTPException
 
-from app.routers import auth, dashboard, devices, alerts
+# Import de tous les routeurs
+from app.routers import auth, dashboard, devices, alerts, telemetry, automations
 from app.ws.manager import router as ws_router
 
 app = FastAPI(title="IoT Platform")
@@ -24,7 +25,24 @@ app.include_router(auth.router)
 app.include_router(dashboard.router)
 app.include_router(devices.router)
 app.include_router(alerts.router)
+app.include_router(telemetry.router)
+app.include_router(automations.router)  # Automatisations — règles IF/THEN
 app.include_router(ws_router)
+
+# Routes placeholder — pages en cours de développement
+@app.get("/teams")
+async def teams(request: Request):
+    return templates.TemplateResponse(request, "app/coming_soon.html", {
+        "active_page": "teams",
+        "page_name": "Équipes"
+    })
+
+@app.get("/settings")
+async def settings(request: Request):
+    return templates.TemplateResponse(request, "app/coming_soon.html", {
+        "active_page": "settings",
+        "page_name": "Paramètres"
+    })
 
 @app.get("/")
 async def root():

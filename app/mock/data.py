@@ -158,3 +158,92 @@ def get_stats():
         "active_alerts": alerts,
         "total_projects": len(MOCK_PROJECTS),
     }
+# MOCK — Règles d'automatisation
+# Une règle = condition sur un composant → action déclenchée
+MOCK_AUTOMATIONS = [
+    {
+        "id": "auto-001",
+        "name": "Alerte température élevée",
+        "description": "Déclenche une alerte si la température dépasse 30°C",
+        "status": "active",
+        "device_id": "device-001",
+        "device_name": "Station météo salon",
+        "trigger": {
+            "component_id": "temp-1",
+            "component_name": "Température",
+            "operator": ">",       # Opérateur de comparaison
+            "value": 30.0,
+            "unit": "°C"
+        },
+        "action": {
+            "type": "alert",       # Type d'action : alert, command, notification
+            "message": "Température trop élevée — vérifier la ventilation"
+        },
+        "last_triggered": "Il y a 2 heures",
+        "trigger_count": 3,        # Nombre de fois déclenchée
+    },
+    {
+        "id": "auto-002",
+        "name": "Pompe irrigation automatique",
+        "description": "Active la pompe si l'humidité du sol descend sous 40%",
+        "status": "active",
+        "device_id": "device-002",
+        "device_name": "Contrôleur serre",
+        "trigger": {
+            "component_id": "soil-1",
+            "component_name": "Humidité sol",
+            "operator": "<",
+            "value": 40.0,
+            "unit": "%"
+        },
+        "action": {
+            "type": "command",
+            "command": "pump_on",
+            "message": "Activation automatique de la pompe d'irrigation"
+        },
+        "last_triggered": "Il y a 30 minutes",
+        "trigger_count": 12,
+    },
+    {
+        "id": "auto-003",
+        "name": "Alerte CO₂ laboratoire",
+        "description": "Alerte critique si CO₂ dépasse 1200 ppm",
+        "status": "active",
+        "device_id": "device-003",
+        "device_name": "Capteur labo alpha",
+        "trigger": {
+            "component_id": "co2-1",
+            "component_name": "CO₂",
+            "operator": ">",
+            "value": 1200.0,
+            "unit": "ppm"
+        },
+        "action": {
+            "type": "alert",
+            "message": "Niveau CO₂ critique — évacuation recommandée"
+        },
+        "last_triggered": "Il y a 3 minutes",
+        "trigger_count": 1,
+    },
+    {
+        "id": "auto-004",
+        "name": "Notification appareil hors ligne",
+        "description": "Notifie si un appareil ne répond plus depuis 30 minutes",
+        "status": "inactive",
+        "device_id": "device-004",
+        "device_name": "Portail bâtiment B2",
+        "trigger": {
+            "component_id": None,
+            "component_name": "Connexion",
+            "operator": "==",
+            "value": "offline",
+            "unit": ""
+        },
+        "action": {
+            "type": "notification",
+            "message": "Appareil hors ligne depuis plus de 30 minutes"
+        },
+        "last_triggered": "Il y a 2 heures",
+        "trigger_count": 5,
+    },
+]

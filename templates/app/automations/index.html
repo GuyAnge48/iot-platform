@@ -1,0 +1,184 @@
+﻿{% extends "base/base.html" %}
+
+{% block title %}Automatisations — IoT Platform{% endblock %}
+{% block page_title %}Automatisations{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- ======================================================
+         EN-TÊTE
+         ====================================================== -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-lg font-semibold text-white">Automatisations</h2>
+            <p class="text-sm text-gray-500 mt-0.5">
+                Règles IF/THEN pour déclencher des actions automatiquement
+            </p>
+        </div>
+        <!-- Bouton ajout — placeholder pour future fonctionnalité -->
+        <button class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            Nouvelle règle
+        </button>
+    </div>
+
+    <!-- ======================================================
+         STATS
+         ====================================================== -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+
+        <!-- Total règles -->
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-xs text-gray-500 uppercase tracking-wide">Total</span>
+                <div class="w-8 h-8 rounded-lg bg-indigo-600/20 flex items-center justify-center">
+                    <i data-lucide="git-branch" class="w-4 h-4 text-indigo-400"></i>
+                </div>
+            </div>
+            <p class="text-2xl font-bold text-white">{{ stats.total }}</p>
+            <p class="text-xs text-gray-500 mt-1">Règles créées</p>
+        </div>
+
+        <!-- Règles actives -->
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-xs text-gray-500 uppercase tracking-wide">Actives</span>
+                <div class="w-8 h-8 rounded-lg bg-green-600/20 flex items-center justify-center">
+                    <i data-lucide="zap" class="w-4 h-4 text-green-400"></i>
+                </div>
+            </div>
+            <p class="text-2xl font-bold text-white">{{ stats.active }}</p>
+            <p class="text-xs text-green-500 mt-1">En cours d'exécution</p>
+        </div>
+
+        <!-- Règles inactives -->
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-xs text-gray-500 uppercase tracking-wide">Inactives</span>
+                <div class="w-8 h-8 rounded-lg bg-gray-700/50 flex items-center justify-center">
+                    <i data-lucide="pause" class="w-4 h-4 text-gray-400"></i>
+                </div>
+            </div>
+            <p class="text-2xl font-bold text-white">{{ stats.inactive }}</p>
+            <p class="text-xs text-gray-500 mt-1">En pause</p>
+        </div>
+
+        <!-- Total déclenchements -->
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-xs text-gray-500 uppercase tracking-wide">Déclenchements</span>
+                <div class="w-8 h-8 rounded-lg bg-yellow-600/20 flex items-center justify-center">
+                    <i data-lucide="activity" class="w-4 h-4 text-yellow-400"></i>
+                </div>
+            </div>
+            <p class="text-2xl font-bold text-white">{{ stats.total_triggers }}</p>
+            <p class="text-xs text-gray-500 mt-1">Au total</p>
+        </div>
+    </div>
+
+    <!-- ======================================================
+         LISTE DES RÈGLES
+         Chaque règle affiche : condition → action + statut
+         Le bouton Activer/Désactiver utilise HTMX
+         ====================================================== -->
+    <div class="space-y-4">
+
+        {% for auto in automations %}
+        <div class="bg-gray-900 border rounded-xl p-5 transition-all
+            {% if auto.status == 'active' %}border-gray-800
+            {% else %}border-gray-800 opacity-60{% endif %}">
+
+            <div class="flex items-start justify-between gap-4">
+
+                <!-- Icône type d'action -->
+                <div class="shrink-0 mt-0.5">
+                    {% if auto.action.type == 'alert' %}
+                    <div class="w-10 h-10 rounded-lg bg-red-900/40 flex items-center justify-center">
+                        <i data-lucide="bell" class="w-5 h-5 text-red-400"></i>
+                    </div>
+                    {% elif auto.action.type == 'command' %}
+                    <div class="w-10 h-10 rounded-lg bg-blue-900/40 flex items-center justify-center">
+                        <i data-lucide="terminal" class="w-5 h-5 text-blue-400"></i>
+                    </div>
+                    {% else %}
+                    <div class="w-10 h-10 rounded-lg bg-purple-900/40 flex items-center justify-center">
+                        <i data-lucide="send" class="w-5 h-5 text-purple-400"></i>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Contenu de la règle -->
+                <div class="flex-1 min-w-0">
+
+                    <!-- Nom + statut -->
+                    <div class="flex items-center gap-3 flex-wrap mb-2">
+                        <h3 class="text-sm font-medium text-white">{{ auto.name }}</h3>
+                    </div>
+
+                    <!-- Description -->
+                    <p class="text-xs text-gray-400 mb-3">{{ auto.description }}</p>
+
+                    <!-- Règle IF → THEN -->
+                    <div class="flex items-center gap-2 flex-wrap">
+
+                        <!-- Condition IF -->
+                        <div class="flex items-center gap-1.5 bg-gray-800 border border-gray-700 rounded-lg px-3 py-1.5">
+                            <span class="text-xs text-indigo-400 font-medium">SI</span>
+                            <span class="text-xs text-white">{{ auto.device_name }}</span>
+                            <span class="text-xs text-gray-500">›</span>
+                            <span class="text-xs text-white">{{ auto.trigger.component_name }}</span>
+                            <span class="text-xs text-yellow-400 font-mono">{{ auto.trigger.operator }}</span>
+                            <span class="text-xs text-white font-mono">{{ auto.trigger.value }}{{ auto.trigger.unit }}</span>
+                        </div>
+
+                        <!-- Flèche -->
+                        <i data-lucide="arrow-right" class="w-4 h-4 text-gray-600"></i>
+
+                        <!-- Action ALORS -->
+                        <div class="flex items-center gap-1.5 bg-gray-800 border border-gray-700 rounded-lg px-3 py-1.5">
+                            <span class="text-xs text-green-400 font-medium">ALORS</span>
+                            <span class="text-xs text-white">
+                                {% if auto.action.type == 'alert' %}Créer une alerte
+                                {% elif auto.action.type == 'command' %}Envoyer commande : {{ auto.action.command }}
+                                {% else %}Envoyer notification{% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Métadonnées : dernière exécution + compteur -->
+                    <div class="flex items-center gap-4 mt-3 text-xs text-gray-600">
+                        <span>Dernier déclenchement : {{ auto.last_triggered }}</span>
+                        <span>{{ auto.trigger_count }} déclenchement(s)</span>
+                    </div>
+                </div>
+
+                <!-- Bouton toggle statut — HTMX -->
+                <!-- hx-post bascule active/inactive et retourne un nouveau badge -->
+                <div id="status-{{ auto.id }}" class="flex items-center gap-2 shrink-0">
+                    <span class="text-xs px-2 py-0.5 rounded-full
+                        {% if auto.status == 'active' %}bg-green-900/50 text-green-400 border border-green-800
+                        {% else %}bg-gray-800 text-gray-500 border border-gray-700{% endif %}">
+                        {% if auto.status == 'active' %}Active{% else %}Inactive{% endif %}
+                    </span>
+                    <button hx-post="/automations/{{ auto.id }}/toggle"
+                            hx-target="#status-{{ auto.id }}"
+                            hx-swap="outerHTML"
+                            class="text-xs px-2 py-0.5 rounded border transition-colors
+                                {% if auto.status == 'active' %}
+                                border-red-800 text-red-400 hover:bg-red-900/20
+                                {% else %}
+                                border-green-800 text-green-400 hover:bg-green-900/20
+                                {% endif %}">
+                        {% if auto.status == 'active' %}Désactiver{% else %}Activer{% endif %}
+                    </button>
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+
+</div>
+{% endblock %}

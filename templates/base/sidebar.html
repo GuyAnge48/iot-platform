@@ -14,7 +14,7 @@
 
         <p class="text-xs text-gray-500 uppercase tracking-wider px-2 mb-2">Principal</p>
 
-        <!-- Chaque lien reçoit la classe "active" si active_page correspond -->
+        <!-- Lien actif = classe "active" appliquée via active_page -->
         <a href="/dashboard"
            class="sidebar-item {% if active_page == 'dashboard' %}active{% endif %} flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-colors">
             <i data-lucide="layout-dashboard" class="w-4 h-4 shrink-0"></i>
@@ -33,33 +33,38 @@
             Alertes
         </a>
 
-        <!-- Section "bientôt disponible" — architecture extensible sans casser le layout -->
+        <!-- Section Analyse — pages activées -->
         <p class="text-xs text-gray-500 uppercase tracking-wider px-2 mt-4 mb-2">Analyse</p>
 
-        <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 cursor-not-allowed">
+        <!-- Télémétrie — page active -->
+        <a href="/telemetry"
+           class="sidebar-item {% if active_page == 'telemetry' %}active{% endif %} flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-colors">
             <i data-lucide="line-chart" class="w-4 h-4 shrink-0"></i>
             Télémétrie
-            <span class="ml-auto text-xs bg-gray-800 text-gray-600 px-1.5 py-0.5 rounded">Soon</span>
         </a>
 
-        <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 cursor-not-allowed">
+        <!-- Automatisations — page à développer -->
+        <a href="/automations"
+           class="sidebar-item {% if active_page == 'automations' %}active{% endif %} flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-colors">
             <i data-lucide="zap" class="w-4 h-4 shrink-0"></i>
             Automatisations
-            <span class="ml-auto text-xs bg-gray-800 text-gray-600 px-1.5 py-0.5 rounded">Soon</span>
         </a>
 
+        <!-- Section Administration -->
         <p class="text-xs text-gray-500 uppercase tracking-wider px-2 mt-4 mb-2">Administration</p>
 
-        <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 cursor-not-allowed">
+        <!-- Équipes — page à développer -->
+        <a href="/teams"
+           class="sidebar-item {% if active_page == 'teams' %}active{% endif %} flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-colors">
             <i data-lucide="users" class="w-4 h-4 shrink-0"></i>
             Équipes
-            <span class="ml-auto text-xs bg-gray-800 text-gray-600 px-1.5 py-0.5 rounded">Soon</span>
         </a>
 
-        <a href="#" class="sidebar-item flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 cursor-not-allowed">
+        <!-- Paramètres — page à développer -->
+        <a href="/settings"
+           class="sidebar-item {% if active_page == 'settings' %}active{% endif %} flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-colors">
             <i data-lucide="settings" class="w-4 h-4 shrink-0"></i>
             Paramètres
-            <span class="ml-auto text-xs bg-gray-800 text-gray-600 px-1.5 py-0.5 rounded">Soon</span>
         </a>
     </nav>
 
