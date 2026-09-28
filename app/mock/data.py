@@ -344,3 +344,61 @@ MOCK_USERS = [
         "avatar": "SB",
     },
 ]
+
+# MOCK — Configuration de la plateforme et clés API
+MOCK_SETTINGS = {
+    # Profil de l'utilisateur connecté
+    "profile": {
+        "name": "Guy Ange Cédric",
+        "email": "guyange@iot-platform.com",
+        "role": "admin",
+        "avatar": "GA",
+        "joined": "Il y a 2 mois",
+    },
+    # Configuration générale de la plateforme
+    "platform": {
+        "name": "IoT Platform",
+        "timezone": "Africa/Abidjan",
+        "language": "Français",
+        "version": "1.0.0",
+        "websocket_interval": 2,   # Intervalle envoi données WebSocket (secondes)
+        "max_devices": 100,        # Limite d'appareils par projet
+    },
+    # Notifications
+    "notifications": {
+        "email_alerts": True,
+        "push_alerts": True,
+        "alert_threshold": "warning",  # Niveau minimum : info / warning / error
+    },
+}
+
+# MOCK — Clés API générées
+MOCK_API_KEYS = [
+    {
+        "id": "key-001",
+        "name": "Robot laboratoire",
+        "key": "iot_live_xK9mP2qR7nL4vT8wA1jC6hD",
+        "permissions": ["read", "write"],
+        "created_at": "Il y a 1 mois",
+        "last_used": "Il y a 2 minutes",
+        "status": "active",
+    },
+    {
+        "id": "key-002",
+        "name": "Serre agricole",
+        "key": "iot_live_bN3sY6uE9fX2mQ5pW8kI1oJ",
+        "permissions": ["read"],
+        "created_at": "Il y a 3 semaines",
+        "last_used": "Il y a 1 heure",
+        "status": "active",
+    },
+    {
+        "id": "key-003",
+        "name": "Test intégration",
+        "key": "iot_test_cV7tZ4aG0hB5nR2sL9dF3eM",
+        "permissions": ["read", "write", "admin"],
+        "created_at": "Il y a 1 semaine",
+        "last_used": "Jamais",
+        "status": "inactive",
+    },
+]

@@ -8,7 +8,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.exceptions import HTTPException
 
 # Import de tous les routeurs
-from app.routers import auth, dashboard, devices, alerts, telemetry, automations, teams
+from app.routers import auth, dashboard, devices, alerts, telemetry, automations, teams, settings
 from app.ws.manager import router as ws_router
 
 app = FastAPI(title="IoT Platform")
@@ -27,15 +27,8 @@ app.include_router(alerts.router)
 app.include_router(telemetry.router)
 app.include_router(automations.router)
 app.include_router(teams.router)
+app.include_router(settings.router)
 app.include_router(ws_router)
-
-# Route placeholder — paramètres (page à développer)
-@app.get("/settings")
-async def settings(request: Request):
-    return templates.TemplateResponse(request, "app/coming_soon.html", {
-        "active_page": "settings",
-        "page_name": "Paramètres"
-    })
 
 @app.get("/")
 async def root():

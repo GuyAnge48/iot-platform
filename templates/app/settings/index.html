@@ -1,0 +1,243 @@
+﻿{% extends "base/base.html" %}
+
+{% block title %}Paramètres — IoT Platform{% endblock %}
+{% block page_title %}Paramètres{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+
+    <!-- ======================================================
+         EN-TÊTE
+         ====================================================== -->
+    <div>
+        <h2 class="text-lg font-semibold text-white">Paramètres</h2>
+        <p class="text-sm text-gray-500 mt-0.5">
+            Profil, configuration plateforme et clés API
+        </p>
+    </div>
+
+    <!-- ======================================================
+         SECTION 1 — PROFIL UTILISATEUR
+         ====================================================== -->
+    <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+        <div class="px-5 py-4 border-b border-gray-800">
+            <h3 class="text-sm font-medium text-white">Profil utilisateur</h3>
+        </div>
+        <div class="p-5">
+            <div class="flex items-center gap-5 mb-6">
+                <!-- Avatar avec initiales -->
+                <div class="w-16 h-16 rounded-full bg-indigo-700 flex items-center justify-center text-xl font-bold text-white shrink-0">
+                    {{ settings.profile.avatar }}
+                </div>
+                <div>
+                    <p class="text-base font-semibold text-white">{{ settings.profile.name }}</p>
+                    <p class="text-sm text-gray-400">{{ settings.profile.email }}</p>
+                    <div class="flex items-center gap-2 mt-1">
+                        <!-- Badge rôle -->
+                        <span class="text-xs bg-purple-900/50 text-purple-400 border border-purple-800 px-2 py-0.5 rounded-full">
+                            {{ settings.profile.role }}
+                        </span>
+                        <span class="text-xs text-gray-600">Membre {{ settings.profile.joined }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Champs du profil — affichage statique pour la démo -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1.5">Nom complet</label>
+                    <input type="text" value="{{ settings.profile.name }}"
+                           class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1.5">Email</label>
+                    <input type="email" value="{{ settings.profile.email }}"
+                           class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1.5">Nouveau mot de passe</label>
+                    <input type="password" placeholder="••••••••"
+                           class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1.5">Confirmer le mot de passe</label>
+                    <input type="password" placeholder="••••••••"
+                           class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                </div>
+            </div>
+
+            <!-- Bouton sauvegarde profil -->
+            <div class="mt-4 flex justify-end">
+                <button class="bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+                    Sauvegarder le profil
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================
+         SECTION 2 — CONFIGURATION PLATEFORME
+         ====================================================== -->
+    <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+        <div class="px-5 py-4 border-b border-gray-800">
+            <h3 class="text-sm font-medium text-white">Configuration plateforme</h3>
+        </div>
+        <div class="p-5 space-y-4">
+
+            <!-- Infos plateforme -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1.5">Nom de la plateforme</label>
+                    <input type="text" value="{{ settings.platform.name }}"
+                           class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1.5">Fuseau horaire</label>
+                    <select class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                        <option selected>{{ settings.platform.timezone }}</option>
+                        <option>Africa/Lagos</option>
+                        <option>Africa/Dakar</option>
+                        <option>Europe/Paris</option>
+                        <option>UTC</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1.5">Langue</label>
+                    <select class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                        <option selected>{{ settings.platform.language }}</option>
+                        <option>English</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1.5">
+                        Intervalle WebSocket (secondes)
+                    </label>
+                    <input type="number" value="{{ settings.platform.websocket_interval }}" min="1" max="60"
+                           class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="border-t border-gray-800 pt-4">
+                <p class="text-xs text-gray-400 uppercase tracking-wide mb-3">Notifications</p>
+                <div class="space-y-3">
+                    <!-- Toggle alertes email -->
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-white">Alertes par email</p>
+                            <p class="text-xs text-gray-500">Recevoir les alertes par email</p>
+                        </div>
+                        <div class="w-11 h-6 rounded-full cursor-pointer transition-colors
+                            {% if settings.notifications.email_alerts %}bg-indigo-600{% else %}bg-gray-700{% endif %}
+                            relative">
+                            <div class="absolute top-1 w-4 h-4 rounded-full bg-white transition-all
+                                {% if settings.notifications.email_alerts %}left-6{% else %}left-1{% endif %}">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Toggle alertes push -->
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-white">Alertes push</p>
+                            <p class="text-xs text-gray-500">Notifications dans le navigateur</p>
+                        </div>
+                        <div class="w-11 h-6 rounded-full cursor-pointer transition-colors
+                            {% if settings.notifications.push_alerts %}bg-indigo-600{% else %}bg-gray-700{% endif %}
+                            relative">
+                            <div class="absolute top-1 w-4 h-4 rounded-full bg-white transition-all
+                                {% if settings.notifications.push_alerts %}left-6{% else %}left-1{% endif %}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Infos version -->
+            <div class="border-t border-gray-800 pt-4 flex items-center justify-between">
+                <div class="flex items-center gap-2 text-xs text-gray-600">
+                    <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                    Version {{ settings.platform.version }} · Max {{ settings.platform.max_devices }} appareils
+                </div>
+                <button class="bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+                    Sauvegarder
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================
+         SECTION 3 — CLÉS API
+         ====================================================== -->
+    <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-800">
+            <div>
+                <h3 class="text-sm font-medium text-white">Clés API</h3>
+                <p class="text-xs text-gray-500 mt-0.5">
+                    Utilisées par les appareils IoT pour s'authentifier
+                </p>
+            </div>
+            <!-- Bouton générer une nouvelle clé — HTMX POST -->
+            <button hx-post="/settings/api-keys/generate"
+                    hx-target="#api-keys-list"
+                    hx-swap="beforeend"
+                    class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium px-3 py-2 rounded-lg transition-colors">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                Générer
+            </button>
+        </div>
+
+        <!-- Liste des clés API -->
+        <!-- HTMX insère les nouvelles clés dans ce conteneur via hx-target="#api-keys-list" -->
+        <div id="api-keys-list">
+            {% for key in api_keys %}
+            <div id="{{ key.id }}" class="flex items-center gap-4 px-5 py-4
+                {% if not loop.first %}border-t border-gray-800{% endif %}
+                {% if key.status == 'inactive' %}opacity-40{% endif %}">
+
+                <!-- Infos clé -->
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-white">{{ key.name }}</p>
+                    <!-- Clé masquée partiellement — sécurité -->
+                    <p class="text-xs font-mono text-gray-500 mt-1 truncate">
+                        {{ key.key[:20] }}••••••••••
+                    </p>
+                    <!-- Permissions -->
+                    <div class="flex items-center gap-1 mt-1.5">
+                        {% for perm in key.permissions %}
+                        <span class="text-xs bg-gray-800 border border-gray-700 text-gray-400 px-1.5 py-0.5 rounded">
+                            {{ perm }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Statut -->
+                <span class="text-xs px-2 py-0.5 rounded-full shrink-0
+                    {% if key.status == 'active' %}bg-green-900/50 text-green-400 border border-green-800
+                    {% else %}bg-gray-800 text-gray-600 border border-gray-700{% endif %}">
+                    {{ key.status }}
+                </span>
+
+                <!-- Dernière utilisation -->
+                <div class="text-right shrink-0 hidden sm:block">
+                    <p class="text-xs text-gray-600">{{ key.last_used }}</p>
+                    <p class="text-xs text-gray-700">{{ key.created_at }}</p>
+                </div>
+
+                <!-- Bouton révoquer — HTMX POST -->
+                {% if key.status == 'active' %}
+                <button hx-post="/settings/api-keys/{{ key.id }}/revoke"
+                        hx-target="#{{ key.id }}"
+                        hx-swap="outerHTML"
+                        class="text-xs px-2 py-1 rounded border border-red-800 text-red-400 hover:bg-red-900/20 transition-colors shrink-0">
+                    Révoquer
+                </button>
+                {% endif %}
+
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
