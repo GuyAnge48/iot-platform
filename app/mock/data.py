@@ -402,3 +402,131 @@ MOCK_API_KEYS = [
         "status": "inactive",
     },
 ]
+
+# ================================================================
+# MOCK — Projets utilisateur avec composants associés
+# ================================================================
+# Nouvelle logique demandée par le mentor :
+# Utilisateur → Ses projets → Composants du projet
+#
+# Structure :
+#   user_id    : identifiant de l'utilisateur propriétaire
+#   components : liste des composants associés directement au projet
+#
+# IMPORTANT : ces données sont indépendantes de MOCK_DEVICES
+# Un projet peut exister sans device physique connecté
+# Les composants ici sont logiques (ce que l'utilisateur a configuré)
+# ================================================================
+
+MOCK_USER_PROJECTS = [
+    {
+        "id": "uproject-001",
+        "user_id": "user-001",          # Propriétaire : Guy Ange
+        "name": "Robot Agricole",
+        "description": "Système automatisé de surveillance agricole",
+        "created_at": "Il y a 1 mois",
+        "status": "active",
+        # Composants associés à CE projet
+        "components": [
+            {
+                "id": "comp-001",
+                "project_id": "uproject-001",
+                "name": "Capteur température",
+                "type": "sensor",
+                "description": "Mesure la température ambiante du robot",
+                "status": "active",
+                "unit": "°C",
+                "created_at": "Il y a 1 mois",
+            },
+            {
+                "id": "comp-002",
+                "project_id": "uproject-001",
+                "name": "Capteur humidité",
+                "type": "sensor",
+                "description": "Mesure l'humidité du sol",
+                "status": "active",
+                "unit": "%",
+                "created_at": "Il y a 1 mois",
+            },
+            {
+                "id": "comp-003",
+                "project_id": "uproject-001",
+                "name": "GPS",
+                "type": "sensor",
+                "description": "Localisation du robot dans le champ",
+                "status": "active",
+                "unit": "coords",
+                "created_at": "Il y a 3 semaines",
+            },
+            {
+                "id": "comp-004",
+                "project_id": "uproject-001",
+                "name": "Moteur principal",
+                "type": "actuator",
+                "description": "Contrôle le déplacement du robot",
+                "status": "active",
+                "unit": "",
+                "created_at": "Il y a 3 semaines",
+            },
+            {
+                "id": "comp-005",
+                "project_id": "uproject-001",
+                "name": "Batterie",
+                "type": "sensor",
+                "description": "Niveau de charge de la batterie",
+                "status": "active",
+                "unit": "%",
+                "created_at": "Il y a 2 semaines",
+            },
+        ],
+    },
+    {
+        "id": "uproject-002",
+        "user_id": "user-001",          # Propriétaire : Guy Ange
+        "name": "Maison Intelligente",
+        "description": "Système domotique de supervision du domicile",
+        "created_at": "Il y a 3 semaines",
+        "status": "active",
+        "components": [
+            {
+                "id": "comp-006",
+                "project_id": "uproject-002",
+                "name": "Température salon",
+                "type": "sensor",
+                "description": "Capteur de température du salon",
+                "status": "active",
+                "unit": "°C",
+                "created_at": "Il y a 3 semaines",
+            },
+            {
+                "id": "comp-007",
+                "project_id": "uproject-002",
+                "name": "Lumière entrée",
+                "type": "actuator",
+                "description": "Contrôle l'éclairage de l'entrée",
+                "status": "active",
+                "unit": "",
+                "created_at": "Il y a 2 semaines",
+            },
+            {
+                "id": "comp-008",
+                "project_id": "uproject-002",
+                "name": "Détecteur mouvement",
+                "type": "sensor",
+                "description": "Détecte les mouvements dans le couloir",
+                "status": "active",
+                "unit": "",
+                "created_at": "Il y a 1 semaine",
+            },
+        ],
+    },
+    {
+        "id": "uproject-003",
+        "user_id": "user-001",          # Propriétaire : Guy Ange
+        "name": "Station Météo",
+        "description": "Réseau de capteurs météorologiques",
+        "created_at": "Il y a 1 semaine",
+        "status": "active",
+        "components": [],               # Projet vide — aucun composant encore
+    },
+]

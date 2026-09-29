@@ -1,0 +1,213 @@
+﻿{% extends "base/base.html" %}
+
+{% block title %}{{ project.name }} — IoT Platform{% endblock %}
+{% block page_title %}Projet{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-6">
+
+    <!-- ======================================================
+         EN-TÊTE : breadcrumb + nom du projet
+         ====================================================== -->
+    <div class="flex items-start justify-between">
+        <div>
+            <!-- Breadcrumb : retour à la liste des projets -->
+            <div class="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                <a href="/projects" class="hover:text-indigo-400 transition-colors">
+                    Mes projets
+                </a>
+                <i data-lucide="chevron-right" class="w-3 h-3"></i>
+                <span class="text-white">{{ project.name }}</span>
+            </div>
+            <h2 class="text-xl font-bold text-white">{{ project.name }}</h2>
+            <p class="text-sm text-gray-500 mt-1">
+                {{ project.description or 'Aucune description.' }}
+            </p>
+            <p class="text-xs text-gray-600 mt-1">Créé {{ project.created_at }}</p>
+        </div>
+        <!-- Bouton ajouter un composant -->
+        <button onclick="document.getElementById('modal-add-component').classList.remove('hidden')"
+                class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors shrink-0">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            Ajouter un composant
+        </button>
+    </div>
+
+    <!-- ======================================================
+         COMPOSANTS DU PROJET
+         IMPORTANT : on affiche UNIQUEMENT les composants de CE projet
+         Aucun composant d'un autre projet n'apparaît ici
+         ====================================================== -->
+    {% if components %}
+
+    <!-- Stats rapides -->
+    <div class="grid grid-cols-3 gap-3">
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-3 text-center">
+            <p class="text-xl font-bold text-white">{{ components|length }}</p>
+            <p class="text-xs text-gray-500 mt-0.5">Total composants</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-3 text-center">
+            <p class="text-xl font-bold text-white">
+                {{ components | selectattr('type', 'equalto', 'sensor') | list | length }}
+            </p>
+            <p class="text-xs text-gray-500 mt-0.5">Capteurs</p>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-3 text-center">
+            <p class="text-xl font-bold text-white">
+                {{ components | selectattr('type', 'equalto', 'actuator') | list | length }}
+            </p>
+            <p class="text-xs text-gray-500 mt-0.5">Actionneurs</p>
+        </div>
+    </div>
+
+    <!-- Liste des composants -->
+    <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+        <div class="px-5 py-4 border-b border-gray-800">
+            <h3 class="text-sm font-medium text-white">
+                Composants associés à ce projet
+            </h3>
+            <p class="text-xs text-gray-500 mt-0.5">
+                Ces composants appartiennent uniquement à « {{ project.name }} »
+            </p>
+        </div>
+
+        <div class="divide-y divide-gray-800">
+            {% for component in components %}
+            <div class="flex items-center gap-4 px-5 py-4">
+
+                <!-- Icône type composant -->
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0
+                    {% if component.type == 'sensor' %}bg-indigo-900/40
+                    {% else %}bg-orange-900/40{% endif %}">
+                    {% if component.type == 'sensor' %}
+                    <i data-lucide="activity" class="w-4 h-4 text-indigo-400"></i>
+                    {% else %}
+                    <i data-lucide="zap" class="w-4 h-4 text-orange-400"></i>
+                    {% endif %}
+                </div>
+
+                <!-- Infos composant -->
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2">
+                        <p class="text-sm font-medium text-white">{{ component.name }}</p>
+                        <!-- Badge type -->
+                        <span class="text-xs px-1.5 py-0.5 rounded shrink-0
+                            {% if component.type == 'sensor' %}bg-indigo-900/50 text-indigo-400
+                            {% else %}bg-orange-900/50 text-orange-400{% endif %}">
+                            {{ component.type }}
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-0.5">
+                        {{ component.description or 'Aucune description.' }}
+                    </p>
+                </div>
+
+                <!-- Unité + statut + date -->
+                <div class="text-right shrink-0">
+                    {% if component.unit %}
+                    <span class="text-xs bg-gray-800 border border-gray-700 text-gray-400 px-2 py-0.5 rounded">
+                        {{ component.unit }}
+                    </span>
+                    {% endif %}
+                    <p class="text-xs text-gray-600 mt-1">{{ component.created_at }}</p>
+                </div>
+
+                <!-- Indicateur statut -->
+                <span class="status-dot online shrink-0"></span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% else %}
+    <!-- État vide — aucun composant dans ce projet -->
+    <div class="bg-gray-900 border border-gray-800 rounded-xl p-12 text-center">
+        <i data-lucide="cpu" class="w-12 h-12 text-gray-700 mx-auto mb-4"></i>
+        <p class="text-base font-medium text-gray-400">Aucun composant</p>
+        <p class="text-sm text-gray-600 mt-1 mb-6">
+            Ce projet est vide. Ajoutez votre premier composant.
+        </p>
+        <button onclick="document.getElementById('modal-add-component').classList.remove('hidden')"
+                class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            Ajouter un composant
+        </button>
+    </div>
+    {% endif %}
+
+    <!-- Retour à la liste -->
+    <a href="/projects"
+       class="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg border border-gray-700 text-sm text-gray-400 hover:text-white hover:border-indigo-600 transition-colors">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        Retour à mes projets
+    </a>
+
+</div>
+
+<!-- ======================================================
+     MODAL — Ajouter un composant
+     Formulaire POST vers /projects/{project_id}/components
+     Le composant est automatiquement associé à CE projet
+     ====================================================== -->
+<div id="modal-add-component"
+     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+    <div class="bg-gray-900 border border-gray-800 rounded-xl w-full max-w-md p-6 shadow-2xl">
+
+        <div class="flex items-center justify-between mb-5">
+            <h3 class="text-base font-semibold text-white">Ajouter un composant</h3>
+            <button onclick="document.getElementById('modal-add-component').classList.add('hidden')"
+                    class="text-gray-500 hover:text-white transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <!-- Formulaire POST — association automatique au projet courant -->
+        <form method="post" action="/projects/{{ project.id }}/components" class="space-y-4">
+
+            <div>
+                <label class="block text-xs text-gray-400 mb-1.5">Nom du composant *</label>
+                <input type="text" name="name" placeholder="Ex: Capteur température"
+                       class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+                       required>
+            </div>
+
+            <div>
+                <label class="block text-xs text-gray-400 mb-1.5">Type *</label>
+                <select name="type"
+                        class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+                    <!-- sensor : lit des données (température, humidité...) -->
+                    <option value="sensor">Capteur (Sensor)</option>
+                    <!-- actuator : effectue une action (moteur, pompe...) -->
+                    <option value="actuator">Actionneur (Actuator)</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs text-gray-400 mb-1.5">Unité de mesure</label>
+                <input type="text" name="unit" placeholder="Ex: °C, %, cm, ppm"
+                       class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
+            </div>
+
+            <div>
+                <label class="block text-xs text-gray-400 mb-1.5">Description</label>
+                <textarea name="description" rows="2"
+                          placeholder="Décrivez le rôle de ce composant..."
+                          class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition resize-none"></textarea>
+            </div>
+
+            <div class="flex gap-3 pt-2">
+                <button type="button"
+                        onclick="document.getElementById('modal-add-component').classList.add('hidden')"
+                        class="flex-1 py-2.5 rounded-lg border border-gray-700 text-sm text-gray-400 hover:text-white transition-colors">
+                    Annuler
+                </button>
+                <button type="submit"
+                        class="flex-1 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-colors">
+                    Ajouter
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
